@@ -15,15 +15,15 @@
 
         //<tag> <stuff>
 
-	If the <stuff> starts with a letter or digit, then at least one space
-	should be placed between <tag> and <stuff>.
+    If the <stuff> starts with a letter or digit, then at least one space
+    should be placed between <tag> and <stuff>.
 
     The command line will contain a list of <tag> names.
 
     A <tag> may contain any short sequence of ASCII letters, digits, and
     underbar '_'. The active <tag> strings are declared in the method line.
-	All <tag>s that are not declared in the command line are ignored and
-	remain as comments.
+    All <tag>s that are not declared in the command line are ignored and
+    remain as comments.
 
     A command line can contain zero or more comments.
 
@@ -43,7 +43,7 @@
     at the top of the output file.
 
     A program is read from stdin, and a modified program is written to stdout.
-	Errors are written to stderr.
+    Errors are written to stderr.
 */
 
 #include <stdlib.h>
@@ -98,31 +98,31 @@ static void emit_line(int from) {
 /*
     Send all or part of the current line to stdout.
 */
-	int index;
-	for (index = from; index < line_length; index += 1) {
-		emit(line[index]);
-	}
+    int index;
+    for (index = from; index < line_length; index += 1) {
+        emit(line[index]);
+    }
 }
 
 
 static int match(int at, int length) {
     int tag_nr;
-	int index;
-	int ok;
+    int index;
+    int ok;
 
     for (tag_nr = 0; tag_nr < nr_tags; tag_nr += 1) {
-		if (tag_lengths[tag_nr] == length) {
-			ok = 1;
-			for (index = 0; index < length; index += 1) {
-				if (tags[tag_nr][index] != line[at + index]) {
-					ok = 0;
-					break;
-				}
-			}
-			if (ok) {
-				return 1;
-			}
-		}
+        if (tag_lengths[tag_nr] == length) {
+            ok = 1;
+            for (index = 0; index < length; index += 1) {
+                if (tags[tag_nr][index] != line[at + index]) {
+                    ok = 0;
+                    break;
+                }
+            }
+            if (ok) {
+                return 1;
+            }
+        }
     }
     return 0;
 }
@@ -137,9 +137,9 @@ static int next() {
 
 static int read_line() {
     int at = 0;
-	int eof = 0;
+    int eof = 0;
     while (1) {
-		line_nr += 1;
+        line_nr += 1;
         if (the_character == EOF) {
             return eof = (at == 0);
         }
@@ -160,8 +160,8 @@ static int read_line() {
         }
         next();
     }
-	line_length = at;
-	line[at] = 0;
+    line_length = at;
+    line[at] = 0;
     return 0;
 }
 
@@ -178,23 +178,23 @@ static void process() {
             while (is_alphanum(line[at + tag_length + 2])) {
                 tag_length += 1;
             }
-			if (match(at + 2, tag_length) == 0) {
-				break;
-			}
-			at += tag_length + 2;
+            if (match(at + 2, tag_length) == 0) {
+                break;
+            }
+            at += tag_length + 2;
         }
-		emit_line(at);
-		emit('\n');
+        emit_line(at);
+        emit('\n');
     }
 }
 
 
 extern int main(int argc, char *argv[]) {
-	int comment = 0;
-	int the_character;
-	int i;
-	int j;
-	char *arg;
+    int comment = 0;
+    int the_character;
+    int i;
+    int j;
+    char *arg;
     line_nr = 0;
     nr_tags = 0;
     for (i = 1; i < argc; i += 1) {
@@ -219,11 +219,11 @@ extern int main(int argc, char *argv[]) {
                 }
                 j += 1;
             }
-			if (j > 0) {
-				tags[nr_tags] = arg;
-				tag_lengths[nr_tags] = j;
-				nr_tags += 1;
-			}
+            if (j > 0) {
+                tags[nr_tags] = arg;
+                tag_lengths[nr_tags] = j;
+                nr_tags += 1;
+            }
         }
     }
     process();
