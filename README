@@ -5,33 +5,35 @@ Douglas Crockford
 Public Domain
 
 
-Ecomcon is a filter that enables selected comments, making them executable. This
-makes it possible to put development, performance, and testing scaffolding into
-a source file. The scaffolding is removed by minification, but is activated by
-ecomcon. There are currently two implementations of ecomcon in C and JavaScript.
+Ecomcon is a filter that enables selected comments, making them
+executable. This makes it possible to put development, performance, and
+testing scaffolding into a source file. The scaffolding is removed by
+minification, but is activated by ecomcon. There are currently two
+implementations of ecomcon in C and JavaScript.
 
-Ecomcon is a filter that takes a source file and looks for tagged comments in
-this form:
+Ecomcon is a filter that takes a source file and looks for tagged
+comments in this form:
 
     //tag stuff
 
-The line comment starts at the beginning of the line. There can be no space
-between the '//' and the tag.
+The line comment starts at the beginning of the line. There can be no
+space between the '//' and the tag.
 
 Ecomcon is given a list of the names of the tags that should be enabled.
 
-The implementation in C obtains the input from 'stdin', and provides the result
-to 'stdout'. The tag list is taken from the command line. The command line can
-also include a '-comment' specification. Ecomcon will exit(1) if there is an
-error.
+The implementation in C obtains the input from 'stdin', and provides the
+result to 'stdout'. The tag list is taken from the command line. The
+command line can also include a '-comment' specification. Ecomcon will
+exit(1) if there is an error.
 
-In JavaScript, it is available as the ecomcon function that takes a source
-string, an array of tags, and an optional array of comments. It will throw an
-exception if there is an error. If there is no error, it returns a string.
+In JavaScript, it is available as the ecomcon function that takes a
+source string, an array of tags, and an optional array of comments. It
+will throw an exception if there is an error. If there is no error, it
+returns a string.
 
 C command line example:
 ----
-ecomcon -comment "Devel Edition." <input >output node test enter exit
+ecomcon -comment "Devel Edition." <input >output es6 test enter exit
 ----
 
 JavaScript example:
@@ -39,12 +41,7 @@ JavaScript example:
 import ecomcon from "./ecomcon.js";
 let output = ecomcon(
     input,
-    [
-        "node",
-        "test",
-        "enter",
-        "exit",
-    ] ,
+    ["es6", "test", "enter", "exit"] ,
     ["Devel Edition."]
 );
 ----
@@ -70,11 +67,11 @@ function Constructor(number) {
 //test this.private_method = private_method;
 //test this.priv = function () {
 
-//test//enter log_enter("priv");
+//enter log_enter("priv");
 
         private_method();
 
-//exit//test log_exit("priv");
+//exit log_exit("priv");
 
     }
 
@@ -82,7 +79,8 @@ function Constructor(number) {
 
 }
 
-//node module.exports = Constructor;
+//es6 export default Constructor;
+//legacy module.exports = Constructor;
 ----
 
 output:
@@ -92,34 +90,33 @@ output:
 
 function Constructor(number) {
 
- log_enter("Constructor");
+log_enter("Constructor");
 
     function private_method() {
 
- log_enter("private_method");
+log_enter("private_method");
 
-//nochange alert();
 
- log_exit("private_method");
+log_exit("private_method");
 
     }
 
- this.private_method = private_method;
- this.priv = function () {
+this.private_method = private_method;
+this.priv = function () {
 
- log_enter("priv");
+log_enter("priv");
 
         private_method();
 
- log_exit("priv");
+log_exit("priv");
 
     }
 
- log_exit("Constructor");
+log_exit("Constructor");
 
 }
 
- module.exports = Constructor;
+export default Constructor;
 ----
 
 input, lightly minified:

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8"/>
+<title>ECOMCON DEMO</title>
+</head>
+<body>
+<pre id=readout></pre>
+
+<script type=module>
+
+const input = `// This is a sample file.
+
+function Constructor(number) {
+
+//enter log_enter("Constructor");
+
+    function private_method() {
+
+//enter log_enter("private_method");
+
+//nochange alert();
+
+//exit log_exit("private_method");
+
+    }
+
+//test this.private_method = private_method;
+//test this.priv = function () {
+
+//enter log_enter("priv");
+
+        private_method();
+
+//exit log_exit("priv");
+
+    }
+
+//exit log_exit("Constructor");
+
+}
+
+//es6 export default Constructor;
+//legacy module.exports = Constructor;
+`;
+
+import ecomcon from "./ecomcon.js";
+let output = ecomcon(
+    input,
+    ["es6", "test", "enter", "exit"] ,
+    ["Devel Edition."]
+);
+
+function show(text) {
+    document.getElementById("readout").appendChild(document.createTextNode(text));
+}
+
+show(output);
+</script>
+</body></html>

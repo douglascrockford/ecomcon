@@ -1,6 +1,6 @@
 /*  ecomcon.c
     Douglas Crockford
-    2018-05-09
+    2018-06-14
 
     Public Domain
 
@@ -15,21 +15,18 @@
 
         //<tag> <stuff>
 
-    If the <stuff> starts with a letter or digit, then at least one space
-    should be placed between <tag> and <stuff>.
+    If the <stuff> starts with a letter or digit, then a space must be placed
+    between <tag> and <stuff>.
 
     The command line will contain a list of <tag> names.
 
     A <tag> may contain any short sequence of ASCII letters, digits, and
-    underbar '_'. The active <tag> strings are declared in the method line.
-    All <tag>s that are not declared in the command line are ignored and
-    remain as comments.
+    underbar '_'. The active <tag> strings are declared in the command line.
+    All <tag>s that are not declared in the command line deleted.
 
     A command line can contain zero or more comments.
 
         -comment <comment>
-
-            A string that will be prepended to the output as a comment.
 
     Sample method line:
 
@@ -50,8 +47,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#define MAX_NR_TAGS    1000
-#define MAX_LINE_LENGTH 65536
+#define MAX_NR_TAGS         1000
+#define MAX_LINE_LENGTH     65536
 
 static int  nr_tags;
 static int  tag_lengths[MAX_NR_TAGS];
@@ -74,7 +71,7 @@ static void error(char* message) {
 }
 
 
-static int is_alphanum(int c) {
+static int is_tag_char(int c) {
 /*
     Return 1 if the character is a letter, digit, underscore.
 */
@@ -107,7 +104,7 @@ static void emit_line(int from) {
 }
 
 
-static int match(int at, int length) {
+static int match(int length) {
     int tag_nr;
     int index;
     int ok;
@@ -116,7 +113,7 @@ static int match(int at, int length) {
         if (tag_lengths[tag_nr] == length) {
             ok = 1;
             for (index = 0; index < length; index += 1) {
-                if (tags[tag_nr][index] != line[at + index]) {
+                if (tags[tag_nr][index] != line[2 + index]) {
                     ok = 0;
                     break;
                 }
@@ -168,22 +165,31 @@ static void process() {
     next();
     while (1) {
         line_length = 0;
+        int supress = 0;
+        int at = 0;
         if (read_line() != 0) {
             break;
         }
-        int at = 0;
-        while (line_length - at > 2 && line[at] == '/' && line[at + 1] == '/') {
+        if (line_length > 2 && line[0] == '/' && line[1] == '/') {
             int tag_length = 0;
-            while (is_alphanum(line[at + tag_length + 2])) {
+            while (is_tag_char(line[tag_length + 2])) {
                 tag_length += 1;
             }
-            if (match(at + 2, tag_length) == 0) {
-                break;
+            if (tag_length > 0) {
+                if (match(tag_length) == 0) {
+                    supress = 1;
+                } else {
+                    at += tag_length + 2;
+                    if (line[at] == ' ') {
+                        at += 1;
+                    }
+                }
             }
-            at += tag_length + 2;
         }
-        emit_line(at);
-        emit('\n');
+        if (!supress) {
+            emit_line(at);
+            emit('\n');
+        }
     }
 }
 
@@ -213,7 +219,7 @@ extern int main(int argc, char *argv[]) {
                 if (the_character == 0) {
                     break;
                 }
-                if (!is_alphanum(the_character)) {
+                if (!is_tag_char(the_character)) {
                     error(arg);
                 }
                 at += 1;
